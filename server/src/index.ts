@@ -1,12 +1,19 @@
-import express, { Request, Response } from 'express';
+// Health check endpoint for testing
+import { Request, Response } from 'express';
+import app from './app';
+import { connectPrisma } from './DB/prismaClient';
 
-const app = express();
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Hello, Express + TypeScript!');
+// Health checker
+app.get('/health', (req: Request, res: Response) => {
+  res.status(200).json({ status: 'ok' });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Express server running at http://localhost:${PORT}`);
+
+const PORT = process.env.PORT;
+
+connectPrisma().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Express server running at http://localhost:${PORT}/health`);
+  });
 });
